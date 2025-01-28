@@ -5,8 +5,8 @@
         public string FileName { get; set; }
         public long StartPoint { get; set; }
         public long EndPoint { get; set; }
-        public int ChunkOrder { get; set; }
-        public int LastChunkOrder { get; set; }
+        public int ChunkIndex { get; set; }
+        public int ChunksCount { get; set; }
     }
 
     public class ChunkProcessingQueueMessageDto
