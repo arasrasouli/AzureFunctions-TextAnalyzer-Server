@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "AzureFunctions_TextAnalyzer": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7081",
+      "launchBrowser": false
+    }
+  }
+}
