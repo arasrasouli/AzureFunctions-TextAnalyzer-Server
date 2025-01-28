@@ -1,4 +1,5 @@
 ﻿using AzureFunctions_TextAnalyzer.Functions.Dto;
+using AzureFunctions_TextAnalyzer.Service;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -9,11 +10,13 @@ namespace AzureFunctions_TextAnalyzer.Functions
     {
         private readonly ILogger<TextBlobFunction> _logger;
         private readonly IConfiguration _config;
+        private readonly IChunkServices _chunkService;
 
-        public TextBlobFunction(ILogger<TextBlobFunction> logger, IConfiguration config)
+        public TextBlobFunction(ILogger<TextBlobFunction> logger, IConfiguration config, IChunkServices chunkService)
         {
             _logger = logger;
             _config = config;
+            _chunkService = chunkService;
         }
 
         [Function("OnBlobUploadGenerateChunks")]
@@ -29,25 +32,17 @@ namespace AzureFunctions_TextAnalyzer.Functions
                 int chunkSize = _config.GetValue<int>(Literals.ChunkSize);
                 int overlapSize = _config.GetValue<int>(Literals.OverlapSize);
                 long blobLength = myBlob.Length;
-                int chunkCount = (int)Math.Ceiling((double)blobLength / chunkSize);
 
-                QueueMessageDto[] messageQueue = new QueueMessageDto[chunkCount];
-                for (int i = 0; i < chunkCount; i++)
-                {
-                    long start = i * chunkSize - overlapSize > 0 ? i * chunkSize - overlapSize : 0;
-                    long end = Math.Min(start + chunkSize - 1, blobLength - 1);
-
-                    QueueMessageDto message = new QueueMessageDto()
+                QueueMessageDto[] messageQueue = _chunkService.GenerateChunkMessages(blobLength, chunkSize, overlapSize)
+                    .Select(x=> new QueueMessageDto()
                     {
                         FileName = name,
-                        ChunkOrder = i + 1,
-                        StartPoint = start,
-                        EndPoint = end,
-                        LastChunkOrder = chunkCount
-                    };
+                        ChunkIndex = x.ChunkIndex,
+                        StartPoint = x.StartPoint,
+                        EndPoint = x.EndPoint,
+                        ChunksCount = x.ChunksCount
 
-                    messageQueue[i] = message;
-                }
+                    }).ToArray();
 
                 return messageQueue;
             }

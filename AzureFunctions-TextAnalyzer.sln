@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35707.178 d17.12
+VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureFunctions-TextAnalyzer.Functions", "AzureFunctions-TextAnalyzer.Functions\AzureFunctions-TextAnalyzer.Functions.csproj", "{6490789A-5628-4E42-BD0F-5E981325C82B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureFunctions-TextAnalyzer.Service", "AzureFunctions-TextAnalyzer.Service\AzureFunctions-TextAnalyzer.Service.csproj", "{51E71395-63BC-4A41-BE17-7CB98540EA00}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{6490789A-5628-4E42-BD0F-5E981325C82B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6490789A-5628-4E42-BD0F-5E981325C82B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6490789A-5628-4E42-BD0F-5E981325C82B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51E71395-63BC-4A41-BE17-7CB98540EA00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51E71395-63BC-4A41-BE17-7CB98540EA00}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51E71395-63BC-4A41-BE17-7CB98540EA00}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51E71395-63BC-4A41-BE17-7CB98540EA00}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
