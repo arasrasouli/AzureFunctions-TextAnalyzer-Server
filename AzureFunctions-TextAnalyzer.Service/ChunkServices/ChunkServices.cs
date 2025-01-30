@@ -1,18 +1,28 @@
-﻿using AzureFunctions_TextAnalyzer.Service.Model;
+//using AzureFunctions_TextAnalyzer.Infrastructure.Helper;
+using AzureFunctions_TextAnalyzer.Service.Model;
 
 namespace AzureFunctions_TextAnalyzer.Service
 {
     public class ChunkServices : IChunkServices
     {
-        public ChunkDataModel[] GenerateChunkMessages(long blobLength, int chunkSize, int overlapSize)
+        private readonly long _chunkSize;
+        private readonly int _overlapSize;
+
+        public ChunkServices(long chunkSize, int overlapSize)
         {
-            int chunkCount = (int)Math.Ceiling((double)blobLength / chunkSize);
+            _chunkSize = chunkSize;
+            _overlapSize = overlapSize;
+        }
+
+        public ChunkDataModel[] GenerateChunkMessages(long blobLength)
+        {
+            int chunkCount = (int)Math.Ceiling((double)blobLength / this._chunkSize);
             var chunkMessages = new ChunkDataModel[chunkCount];
 
             for (int i = 0; i < chunkCount; i++)
             {
-                long start = Math.Max(i * chunkSize - overlapSize, 0);
-                long end = Math.Min(start + chunkSize - 1, blobLength - 1);
+                long start = Math.Max(i * this._chunkSize - this._overlapSize, 0);
+                long end = Math.Min(start + this._chunkSize - 1, blobLength - 1);
 
                 chunkMessages[i] = new ChunkDataModel
                 {
