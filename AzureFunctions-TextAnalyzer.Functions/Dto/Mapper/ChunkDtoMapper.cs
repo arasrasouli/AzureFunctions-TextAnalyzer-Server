@@ -1,6 +1,5 @@
 ﻿using AzureFunctions_TextAnalyzer.Service.Model;
 
-
 namespace AzureFunctions_TextAnalyzer.Functions.Dto.Mapper
 {
     public class ChunkDtoMapper : IDtoMapper<ChunkDataModel, ChunkQueueMessageDto>

@@ -9,11 +9,10 @@
         public int ChunksCount { get; set; }
     }
 
-    public class ChunkWordCountQueueMessageDto
+    public class FileChunkDto
     {
+        public string PartitionKey { get; set; }
         public string FileName { get; set; }
-        public Dictionary<string, int> WordCounts { get; set; }
-        public int ChunkOrder { get; set; }
-        public int ChunksCount { get; set; }
+        public string Status { get; set; }
     }
 }
