@@ -4,6 +4,6 @@ namespace AzureFunctions_TextAnalyzer.Service
 {
     public interface IChunkServices
     {
-        ChunkDataModel[] GenerateChunkMessages(long blobLength);
+        Task<ChunkDataModel[]> GenerateChunkMessagesAsync(string fileName, long fileLength);
     }
 }
