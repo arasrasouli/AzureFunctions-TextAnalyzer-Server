@@ -2,9 +2,12 @@
 {
     public static class Literals
     {
-        public const string StorageConnectionString = nameof(StorageConnectionString);
+        public const string AzureWebJobsStorage = nameof(AzureWebJobsStorage);
+        public const string BlobContainer = nameof(BlobContainer);
         public const string ChunkSize = nameof(ChunkSize);
         public const string OverlapSize = nameof(OverlapSize);
-        public const string Pattern = nameof(Pattern);
+        public const string TableStorageConnectionString = nameof(TableStorageConnectionString);
+        public const string ChunkTableName = nameof(ChunkTableName);
+        public const string FileTableName = nameof(FileTableName);
     }
 }
