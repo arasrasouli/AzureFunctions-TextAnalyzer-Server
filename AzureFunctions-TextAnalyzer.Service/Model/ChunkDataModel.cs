@@ -2,15 +2,18 @@
 {
     public class ChunkDataModel
     {
+        internal object wordsCount;
+
+        public string Name { get; set; }
         public long StartPoint { get; set; }
         public long EndPoint { get; set; }
         public int ChunkIndex { get; set; }
         public int ChunksCount { get; set; }
     }
-
-    public class ChunkProcessingModel
+    public class FileChunkModel
     {
-        public Dictionary<string, int> WordCounts { get; set; }
-        public int ChunkIndex { get; set; }
+        public string PartitionKey { get; set; }
+        public string RowKey { get; set; }
+        public string Status { get; set; }
     }
 }

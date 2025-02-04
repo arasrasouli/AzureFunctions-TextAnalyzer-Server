@@ -1,6 +1,6 @@
 ﻿namespace AzureFunctions_TextAnalyzer.Functions.Dto
 {
-    public class QueueMessageDto
+    public class ChunkQueueMessageDto
     {
         public string FileName { get; set; }
         public long StartPoint { get; set; }
@@ -9,11 +9,10 @@
         public int ChunksCount { get; set; }
     }
 
-    public class ChunkProcessingQueueMessageDto
+    public class FileChunkDto
     {
+        public string PartitionKey { get; set; }
         public string FileName { get; set; }
-        public Dictionary<string, int> WordCounts { get; set; }
-        public int ChunkOrder { get; set; }
-        public int LastChunkOrder { get; set; }
+        public string Status { get; set; }
     }
 }
