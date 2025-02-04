@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureFunctions-TextAnalyzer
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureFunctions-TextAnalyzer.Service", "AzureFunctions-TextAnalyzer.Service\AzureFunctions-TextAnalyzer.Service.csproj", "{51E71395-63BC-4A41-BE17-7CB98540EA00}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureFunctions-TextAnalyzer.Common", "AzureFunctions-TextAnalyzer.Common\AzureFunctions-TextAnalyzer.Common.csproj", "{69F8D9FD-1CC0-4525-ACE7-60365746D61E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureFunctions-TextAnalyzer.DAL", "AzureFunctions-TextAnalyzer.Dal\AzureFunctions-TextAnalyzer.DAL.csproj", "{BD9548CF-174E-4EF2-9423-A33A42F97DA5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{51E71395-63BC-4A41-BE17-7CB98540EA00}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{51E71395-63BC-4A41-BE17-7CB98540EA00}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{51E71395-63BC-4A41-BE17-7CB98540EA00}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69F8D9FD-1CC0-4525-ACE7-60365746D61E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69F8D9FD-1CC0-4525-ACE7-60365746D61E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69F8D9FD-1CC0-4525-ACE7-60365746D61E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69F8D9FD-1CC0-4525-ACE7-60365746D61E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD9548CF-174E-4EF2-9423-A33A42F97DA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD9548CF-174E-4EF2-9423-A33A42F97DA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD9548CF-174E-4EF2-9423-A33A42F97DA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD9548CF-174E-4EF2-9423-A33A42F97DA5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

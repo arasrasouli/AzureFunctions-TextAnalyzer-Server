@@ -7,4 +7,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\AzureFunctions-TextAnalyzer.Dal\AzureFunctions-TextAnalyzer.DAL.csproj" />
+    <ProjectReference Include="..\AzureFunctions-TextAnalyzer.Common\AzureFunctions-TextAnalyzer.Common.csproj" />
+  </ItemGroup>
+
 </Project>
