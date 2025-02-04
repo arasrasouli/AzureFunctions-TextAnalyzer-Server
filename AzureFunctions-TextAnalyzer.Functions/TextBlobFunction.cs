@@ -57,5 +57,33 @@ namespace AzureFunctions_TextAnalyzer.Functions
             }
         }
 
+        [Function("ProcessChunkQueueMessage")]
+        [QueueOutput("chunk-word-count-queue")]
+        public async Task<FileChunkDto?> ProcessChunkQueueMessage(
+            [QueueTrigger("blob-chunk-queue", Connection = "")] string message)
+        {
+            try
+            {
+                if (message == null)
+                {
+                    _logger.LogInformation($"null message");
+                    return null;
+                }
+
+                ChunkQueueMessageDto chunkMessageDto = JsonSerializer.Deserialize<ChunkQueueMessageDto>(message);
+
+                IDtoMapper<ChunkDataModel, ChunkQueueMessageDto> chunkMapper = _mapperFactory.GetMapper<ChunkDataModel, ChunkQueueMessageDto>();
+                FileChunkModel fileProcessStatus = await _chunkService.ProcessChunkAsync(chunkMapper.MapToModel(chunkMessageDto));
+                _logger.LogInformation($"Processed chunk {chunkMessageDto.ChunkIndex} for file {chunkMessageDto.FileName}");
+
+                IDtoMapper<FileChunkModel, FileChunkDto> fileChunkMapper = _mapperFactory.GetMapper<FileChunkModel, FileChunkDto>();
+                return fileProcessStatus.Status == FileProcessingStatus.Completed.ToString() ? fileChunkMapper.MapFromModel(fileProcessStatus) : null;                   
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error processing queue message: {ex.Message}");
+                throw;
+            }
+        }
     }
 }
