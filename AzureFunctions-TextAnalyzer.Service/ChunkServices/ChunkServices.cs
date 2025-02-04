@@ -54,5 +54,72 @@ namespace AzureFunctions_TextAnalyzer.Service
 
             return chunkMessages;
         }
+
+        public async Task<FileChunkModel> ProcessChunkAsync(ChunkDataModel chunk)
+        {
+            try
+            {
+                string originalChunk = await _fileServices.ReadBlobChunkAsync(chunk.Name, chunk.StartPoint, chunk.EndPoint);
+
+                string NonWordWithSpaceChunk = StringHelper.ReplaceNonWordWithSpace(originalChunk);
+
+                string validChunk = GetValidChunk(NonWordWithSpaceChunk, chunk.ChunkIndex == 1, chunk.ChunkIndex == chunk.ChunksCount);
+
+                Dictionary<string, int> wordsCount = CountWords(validChunk);
+
+                string partitionKey = StringHelper.GeneratePartitionKey(chunk.Name, chunk.ChunksCount);
+
+                await _chunkWordRepository.AddEntityAsync(new ChunkWordEntity()
+                {
+                    PartitionKey = partitionKey,
+                    RowKey = $"index_{chunk.ChunkIndex}",
+                    WordsCount = JsonSerializer.Serialize(wordsCount)
+                });
+
+                FileChunkEntity processedFileChunk = await _fileChunkRepository.UpdateRemainingChunksAsync(partitionKey, chunk.Name, chunk.ChunksCount) ?? new FileChunkEntity();
+
+                return new FileChunkModel()
+                {
+                    PartitionKey = partitionKey,
+                    Status = processedFileChunk.RemainingChunks == 0 ? FileProcessingStatus.Completed.ToString() : FileProcessingStatus.InProgress.ToString(),
+                    RowKey = chunk.Name,
+                };
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+
+        protected string GetValidChunk(string chunk, bool isFirst, bool isLast)
+        {
+            if (!isFirst && isLast && chunk.Length <= this._overlapSize)
+            {
+                return string.Empty;
+            }
+
+            int startPoint = isFirst ? 0 : StringHelper.FindIndexOfLastSpace(chunk.Substring(0, this._overlapSize));
+
+            int distanceFromEndPoint = isLast ? 0 : this._overlapSize - StringHelper.FindIndexOfLastSpace(chunk.Substring(chunk.Length - this._overlapSize, this._overlapSize));
+
+            return chunk.Substring(startPoint, chunk.Length - distanceFromEndPoint - startPoint);
+        }
+
+        protected Dictionary<string, int> CountWords(string chunk)
+        {
+            var wordCounts = new Dictionary<string, int>();
+            var words = chunk.Split(new[] { ' ', '\n', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (var word in words)
+            {
+                if (wordCounts.ContainsKey(word))
+                    wordCounts[word]++;
+                else
+                    wordCounts[word] = 1;
+            }
+
+            return wordCounts;
+        }
     }
 }
