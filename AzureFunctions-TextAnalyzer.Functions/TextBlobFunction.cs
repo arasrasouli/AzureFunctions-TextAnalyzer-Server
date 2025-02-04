@@ -1,5 +1,7 @@
-﻿using AzureFunctions_TextAnalyzer.Functions.Dto;
+﻿using AzureFunctions_TextAnalyzer.Dto.Mapper;
+using AzureFunctions_TextAnalyzer.Functions.Dto;
 using AzureFunctions_TextAnalyzer.Functions.Dto.Mapper;
+using AzureFunctions_TextAnalyzer.Common.Enums;
 using AzureFunctions_TextAnalyzer.Service;
 using AzureFunctions_TextAnalyzer.Service.Model;
 using Microsoft.Azure.Functions.Worker;
@@ -14,25 +16,24 @@ namespace AzureFunctions_TextAnalyzer.Functions
         private readonly ILogger<TextBlobFunction> _logger;
         private readonly IConfiguration _config;
         private readonly IChunkServices _chunkService;
-        private readonly IDtoMapper<ChunkDataModel, ChunkQueueMessageDto> _dtoMapper;
-
+        private readonly IMapperFactory _mapperFactory;
 
         public TextBlobFunction(
             ILogger<TextBlobFunction> logger,
             IConfiguration config,
             IChunkServices chunkService,
-            IDtoMapper<ChunkDataModel, ChunkQueueMessageDto> dtoMapper
+            IMapperFactory mapperFactory
         )
         {
             _logger = logger;
             _config = config;
             _chunkService = chunkService;
-            _dtoMapper = dtoMapper;
+            _mapperFactory = mapperFactory;
         }
 
         [Function("OnBlobUploadGenerateChunks")]
         [QueueOutput("blob-chunk-queue")]
-        public ChunkQueueMessageDto[] OnBlobUploadGenerateChunks(
+        public async Task<ChunkQueueMessageDto[]> OnBlobUploadGenerateChunks(
             [BlobTrigger("txt-container/{name}", Connection = "AzureWebJobsStorage")] Stream myBlob,
             string name)
         {
@@ -41,10 +42,11 @@ namespace AzureFunctions_TextAnalyzer.Functions
                 _logger.LogInformation($"Blob trigger function Processed blob\n Name:{name} \n Size: {myBlob.Length} Bytes");
 
                 long blobLength = myBlob.Length;
+                IDtoMapper<ChunkDataModel, ChunkQueueMessageDto> chunkMapper = _mapperFactory.GetMapper<ChunkDataModel, ChunkQueueMessageDto>();
 
-                ChunkQueueMessageDto[] messageQueue = _chunkService
-                    .GenerateChunkMessages(blobLength)
-                    .Select(item => _dtoMapper.MapFromModel(item)).ToArray();
+                ChunkQueueMessageDto[] messageQueue = (await _chunkService
+                    .GenerateChunkMessagesAsync(name, blobLength))
+                    .Select(item => chunkMapper.MapFromModel(item)).ToArray();
 
                 return messageQueue;
             }
