@@ -1,6 +1,7 @@
-﻿using System.Text;
+﻿using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using Microsoft.Extensions.Logging;
-using Azure.Storage.Blobs;
+using System.Text;
 
 namespace AzureFunctions_TextAnalyzer.Common
 {
@@ -21,24 +22,53 @@ namespace AzureFunctions_TextAnalyzer.Common
         {
             try
             {
-                string connectionString = _connectionString;
-                string containerName = _containerName;
-
-                BlobServiceClient blobServiceClient = new BlobServiceClient(connectionString);
-                BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(containerName);
-                BlobClient blobClient = containerClient.GetBlobClient(fileName);
-
-                using (MemoryStream memoryStream = new MemoryStream())
+                if (string.IsNullOrEmpty(fileName))
                 {
-                    await blobClient.DownloadToAsync(memoryStream);
-                    string content = Encoding.UTF8.GetString(memoryStream.ToArray());
-                    return content;
+                    throw new ArgumentNullException(nameof(fileName), "File name cannot be null or empty.");
                 }
+
+                if (startPoint < 0 || startPoint >= endPoint)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(startPoint), "Invalid range specified. StartPoint must be less than EndPoint and non-negative.");
+                }
+
+                return await DownloadBlobChunkAsync(fileName, startPoint, endPoint);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error reading blob chunk: {ex.Message}");
+                _logger.LogError($"Error reading blob chunk: {ex.Message}. FileName: {fileName}, StartPoint: {startPoint}, EndPoint: {endPoint}");
                 throw;
+            }
+        }
+
+        private async Task<string> DownloadBlobChunkAsync(string fileName, long startPoint, long endPoint)
+        {
+            BlobServiceClient blobServiceClient = new BlobServiceClient(_connectionString);
+            BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(_containerName);
+            BlobClient blobClient = containerClient.GetBlobClient(fileName);
+
+            bool blobExists = await blobClient.ExistsAsync();
+            if (!blobExists)
+            {
+                throw new FileNotFoundException($"The blob '{fileName}' does not exist in container '{_containerName}'.");
+            }
+
+            BlobProperties properties = await blobClient.GetPropertiesAsync();
+            if (endPoint > properties.ContentLength)
+            {
+                throw new ArgumentOutOfRangeException(nameof(endPoint), "Endpoint is beyond the file boundary.");
+            }
+
+            var range = new Azure.HttpRange(startPoint, endPoint - startPoint + 1);
+
+            var response = await blobClient.DownloadStreamingAsync(new BlobDownloadOptions { Range = range });
+
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                await response.Value.Content.CopyToAsync(memoryStream);
+
+                string result = Encoding.UTF8.GetString(memoryStream.ToArray());
+                return result;
             }
         }
     }
