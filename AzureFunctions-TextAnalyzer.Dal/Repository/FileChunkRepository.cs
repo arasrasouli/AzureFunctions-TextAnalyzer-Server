@@ -1,11 +1,12 @@
-﻿using AzureFunctions_TextAnalyzer.DAL.Entities;
+﻿using Azure.Data.Tables;
+using AzureFunctions_TextAnalyzer.DAL.Entities;
 
 namespace AzureFunctions_TextAnalyzer.DAL.Repositories
 {
     public class FileChunkRepository : TableStorageRepository<FileChunkEntity>, IFileChunkRepository
     {
-        public FileChunkRepository(string connectionString, string tableName)
-            : base(connectionString, tableName)
+        public FileChunkRepository(TableClient tableClient)
+            : base(tableClient)
         {
         }
 
