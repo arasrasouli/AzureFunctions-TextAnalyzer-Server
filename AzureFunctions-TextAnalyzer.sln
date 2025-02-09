@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureFunctions-TextAnalyzer
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureFunctions-TextAnalyzer.Common.Tests", "AzureFunctions-TextAnalyzer.Common.Tests\AzureFunctions-TextAnalyzer.Common.Tests.csproj", "{53D106C2-3ED8-4222-B942-9E0BB99C395F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureFunctions-TextAnalyzer.DAL.Tests", "AzureFunctions-TextAnalyzer.DAL.Tests\AzureFunctions-TextAnalyzer.DAL.Tests.csproj", "{D3B418E4-55C7-4EBD-A8F9-3FFB3561E719}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{53D106C2-3ED8-4222-B942-9E0BB99C395F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{53D106C2-3ED8-4222-B942-9E0BB99C395F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{53D106C2-3ED8-4222-B942-9E0BB99C395F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3B418E4-55C7-4EBD-A8F9-3FFB3561E719}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3B418E4-55C7-4EBD-A8F9-3FFB3561E719}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3B418E4-55C7-4EBD-A8F9-3FFB3561E719}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3B418E4-55C7-4EBD-A8F9-3FFB3561E719}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
