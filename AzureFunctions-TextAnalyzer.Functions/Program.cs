@@ -1,7 +1,10 @@
-using AzureFunctions_TextAnalyzer.Functions;
-using AzureFunctions_TextAnalyzer.Functions.Dto.Mapper;
-using AzureFunctions_TextAnalyzer.Functions.Dto;
+using Azure.Data.Tables;
 using AzureFunctions_TextAnalyzer.Common;
+using AzureFunctions_TextAnalyzer.DAL.Repositories;
+using AzureFunctions_TextAnalyzer.Dto.Mapper;
+using AzureFunctions_TextAnalyzer.Functions;
+using AzureFunctions_TextAnalyzer.Functions.Dto;
+using AzureFunctions_TextAnalyzer.Functions.Dto.Mapper;
 using AzureFunctions_TextAnalyzer.Service;
 using AzureFunctions_TextAnalyzer.Service.Model;
 using Microsoft.Azure.Functions.Worker.Builder;
@@ -9,8 +12,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using AzureFunctions_TextAnalyzer.DAL.Repositories;
-using AzureFunctions_TextAnalyzer.Dto.Mapper;
 
 var builder = FunctionsApplication.CreateBuilder(args);
 
@@ -42,18 +43,20 @@ builder.Services.AddScoped<IChunkServices>(sp =>
 
 builder.Services.AddScoped(typeof(ITableStorageRepository<>), typeof(TableStorageRepository<>));
 
+string connectionString = builder.Configuration.GetValue<string>(Literals.TableStorageConnectionString);
+
 builder.Services.AddScoped<IChunkWordRepository>(sp =>
 {
-    string connectionString = builder.Configuration.GetValue<string>(Literals.TableStorageConnectionString);
     string tableName = builder.Configuration.GetValue<string>(Literals.ChunkTableName);
-    return new ChunkWordRepository(connectionString, tableName);
+    TableClient tableClient = new TableClient(connectionString, tableName);
+    return new ChunkWordRepository(tableClient);
 });
 
 builder.Services.AddScoped<IFileChunkRepository>(sp =>
 {
-    string connectionString = builder.Configuration.GetValue<string>(Literals.TableStorageConnectionString);
     string tableName = builder.Configuration.GetValue<string>(Literals.FileTableName);
-    return new FileChunkRepository(connectionString, tableName);
+    TableClient tableClient = new TableClient(connectionString, tableName);
+    return new FileChunkRepository(tableClient);
 });
 
 builder.Services.AddSingleton<IMapperFactory, MapperFactory>();

@@ -6,9 +6,9 @@ namespace AzureFunctions_TextAnalyzer.DAL.Repositories
     {
         protected readonly TableClient _tableClient;
 
-        public TableStorageRepository(string connectionString, string tableName)
+        public TableStorageRepository(TableClient tableClient)
         {
-            _tableClient = new TableClient(connectionString, tableName);
+            _tableClient = tableClient;
             _tableClient.CreateIfNotExists();
         }
 
