@@ -3,6 +3,7 @@
     public static class Literals
     {
         public const string AzureWebJobsStorage = nameof(AzureWebJobsStorage);
+        public const string ServiceBusConnectionString = nameof(ServiceBusConnectionString);
         public const string BlobContainer = nameof(BlobContainer);
         public const string ChunkSize = nameof(ChunkSize);
         public const string OverlapSize = nameof(OverlapSize);
