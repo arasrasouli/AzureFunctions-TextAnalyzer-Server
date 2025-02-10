@@ -2,8 +2,6 @@
 {
     public class ChunkDataModel
     {
-        internal object wordsCount;
-
         public string Name { get; set; }
         public long StartPoint { get; set; }
         public long EndPoint { get; set; }
