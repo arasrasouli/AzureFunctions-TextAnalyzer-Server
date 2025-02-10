@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AzureFunctions-TextAnalyzer.Dal\AzureFunctions-TextAnalyzer.DAL.csproj" />
-    <ProjectReference Include="..\AzureFunctions-TextAnalyzer.Common\AzureFunctions-TextAnalyzer.Common.csproj" />
+    <ProjectReference Include="..\AzureFunctions-TextAnalyzer.Infrastructure\AzureFunctions-TextAnalyzer.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
