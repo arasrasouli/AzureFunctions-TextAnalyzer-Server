@@ -6,5 +6,6 @@ namespace AzureFunctions_TextAnalyzer.Service
     {
         Task<ChunkDataModel[]> GenerateChunkMessagesAsync(string fileName, long fileLength);
         Task<FileChunkModel> ProcessChunkAsync(ChunkDataModel chunk);
+        Task<bool> SummarizeChunks(FileChunkModel fileChunkModel);
     }
 }

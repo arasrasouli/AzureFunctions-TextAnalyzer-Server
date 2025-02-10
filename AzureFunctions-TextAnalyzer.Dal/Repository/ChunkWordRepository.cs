@@ -9,5 +9,17 @@ namespace AzureFunctions_TextAnalyzer.DAL.Repositories
             : base(tableClient)
         {
         }
+        public async Task<List<string>> GetChunksAsync(string partitionKey)
+        {
+            var queryResults = _tableClient.QueryAsync<ChunkWordEntity>(e => e.PartitionKey == partitionKey);
+
+            List<string> chunkRowsDictionary = new List<string>();
+            await foreach (ChunkWordEntity row in queryResults)
+            {
+                chunkRowsDictionary.Add(row.WordsCount);
+            }
+
+            return chunkRowsDictionary;
+        }
     }
 }

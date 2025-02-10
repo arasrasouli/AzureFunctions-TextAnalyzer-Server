@@ -1,10 +1,12 @@
 using Azure.Data.Tables;
+using Azure.Messaging.ServiceBus;
 using AzureFunctions_TextAnalyzer.Common;
 using AzureFunctions_TextAnalyzer.DAL.Repositories;
 using AzureFunctions_TextAnalyzer.Dto.Mapper;
 using AzureFunctions_TextAnalyzer.Functions;
 using AzureFunctions_TextAnalyzer.Functions.Dto;
 using AzureFunctions_TextAnalyzer.Functions.Dto.Mapper;
+using AzureFunctions_TextAnalyzer.Infrastructure.ServiceBus;
 using AzureFunctions_TextAnalyzer.Service;
 using AzureFunctions_TextAnalyzer.Service.Model;
 using Microsoft.Azure.Functions.Worker.Builder;
@@ -35,10 +37,12 @@ builder.Services.AddScoped<IChunkServices>(sp =>
 
     var fileChunkRepository = sp.GetRequiredService<IFileChunkRepository>();
 
+    var messagePublisher = sp.GetRequiredService<IMessagePublisher>();
+
     long chunkSize = builder.Configuration.GetValue<long>(Literals.ChunkSize);
     int overlapSize = builder.Configuration.GetValue<int>(Literals.OverlapSize);
 
-    return new ChunkServices(chunkWordRepository, fileChunkRepository, fileServices, chunkSize, overlapSize);
+    return new ChunkServices(chunkWordRepository, fileChunkRepository, fileServices, messagePublisher, chunkSize, overlapSize);
 });
 
 builder.Services.AddScoped(typeof(ITableStorageRepository<>), typeof(TableStorageRepository<>));
@@ -62,6 +66,17 @@ builder.Services.AddScoped<IFileChunkRepository>(sp =>
 builder.Services.AddSingleton<IMapperFactory, MapperFactory>();
 builder.Services.AddSingleton<IDtoMapper<ChunkDataModel, ChunkQueueMessageDto>, ChunkDtoMapper>();
 builder.Services.AddSingleton<IDtoMapper<FileChunkModel, FileChunkDto>, FileChunkDtoMapper>();
+
+builder.Services.AddSingleton<IServiceBusSenderFactory>(sp =>
+{
+    var configuration = sp.GetRequiredService<IConfiguration>();
+    var connectionString = builder.Configuration.GetValue<string>(Literals.ServiceBusConnectionString);
+    return new ServiceBusSenderFactory(connectionString); // Pass the string to the constructor
+});
+
+builder.Services.AddTransient<IMessagePublisher, MessagePublisher>();
+
+//builder.Services.AddLogging();
 
 builder.ConfigureFunctionsWebApplication();
 

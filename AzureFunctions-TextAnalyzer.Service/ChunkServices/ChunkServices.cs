@@ -5,6 +5,7 @@ using AzureFunctions_TextAnalyzer.Common.Enums;
 using AzureFunctions_TextAnalyzer.Common.Helper;
 using AzureFunctions_TextAnalyzer.Service.Model;
 using System.Text.Json;
+using AzureFunctions_TextAnalyzer.Infrastructure.ServiceBus;
 
 namespace AzureFunctions_TextAnalyzer.Service
 {
@@ -13,13 +14,20 @@ namespace AzureFunctions_TextAnalyzer.Service
         private readonly IChunkWordRepository _chunkWordRepository;
         private readonly IFileChunkRepository _fileChunkRepository;
         private readonly IFileServices _fileServices;
+        private readonly IMessagePublisher _messagePublisher;
         private readonly long _chunkSize;
         private readonly int _overlapSize;
 
-        public ChunkServices(IChunkWordRepository chunkWordRepository, IFileChunkRepository fileChunkRepository, IFileServices fileServices, long chunkSize, int overlapSize)
+        public ChunkServices(IChunkWordRepository chunkWordRepository,
+            IFileChunkRepository fileChunkRepository,
+            IFileServices fileServices,
+            IMessagePublisher messagePublisher,
+            long chunkSize,
+            int overlapSize)
         {
             _chunkWordRepository = chunkWordRepository;
             _fileChunkRepository = fileChunkRepository;
+            _messagePublisher = messagePublisher;
             _fileServices = fileServices;
             _chunkSize = chunkSize;
             _overlapSize = overlapSize;
@@ -120,6 +128,57 @@ namespace AzureFunctions_TextAnalyzer.Service
             }
 
             return wordCounts;
+        }
+
+        public async Task<bool> SummarizeChunks(FileChunkModel fileChunk)
+        {
+            List<string> chunkWordsDictionary = await _chunkWordRepository.GetChunksAsync(fileChunk.PartitionKey);
+
+            var summarizedDictionary = SummarizeWordCounts(chunkWordsDictionary);
+
+            if (summarizedDictionary.Count == 0)
+            {
+                return false;
+            }
+
+            var messageModel = new ServiceBusMessageModel
+            {
+                Name = fileChunk.RowKey,
+                WordsCount = summarizedDictionary
+            };
+
+            try
+            {
+                await _messagePublisher.PublishMessageAsync(JsonSerializer.Serialize(messageModel), QueueNames.WordsCountQueue);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        protected Dictionary<string, int> SummarizeWordCounts(List<string> chunkWordsDictionary)
+        {
+            var summarizedDictionary = new Dictionary<string, int>();
+
+            if (chunkWordsDictionary == null || !chunkWordsDictionary.Any())
+            {
+                return summarizedDictionary;
+            }
+
+            foreach (var chunk in chunkWordsDictionary)
+            {
+                var wordCounts = JsonSerializer.Deserialize<Dictionary<string, int>>(chunk) ?? new Dictionary<string, int>();
+
+                foreach (var kvp in wordCounts)
+                {
+                    summarizedDictionary.TryGetValue(kvp.Key, out var count);
+                    summarizedDictionary[kvp.Key] = count + kvp.Value;
+                }
+            }
+
+            return summarizedDictionary;
         }
     }
 }
