@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureFunctions-TextAnalyzer
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureFunctions-TextAnalyzer.Infrastructure", "AzureFunctions-TextAnalyzer.Infrastructure\AzureFunctions-TextAnalyzer.Infrastructure.csproj", "{047704D9-02CB-4B1B-9699-F6D9D56D2C07}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{D0DBF87B-C55F-4D47-B806-D86462359E7A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -54,5 +56,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{53D106C2-3ED8-4222-B942-9E0BB99C395F} = {D0DBF87B-C55F-4D47-B806-D86462359E7A}
+		{D3B418E4-55C7-4EBD-A8F9-3FFB3561E719} = {D0DBF87B-C55F-4D47-B806-D86462359E7A}
 	EndGlobalSection
 EndGlobal
